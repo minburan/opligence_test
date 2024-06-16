@@ -1,0 +1,23 @@
+export default function App() {
+  axios
+    .get("https://pokeapi.co/api/v2/pokemon/?limit=1302")
+    .then((results) => {
+      console.log(results.data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  const array = [];
+
+  return (
+    <div>
+      <p>テスト</p>
+      {array.map((results) => (
+        <div key={results.name}>
+          <p>{results.url}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
