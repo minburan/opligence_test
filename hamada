@@ -1,23 +1,47 @@
+import "./styles.css";
+import axios from "axios";
+import { useState } from "react";
+
+//useEffectはあったほうがいいのか？？
+
 export default function App() {
+  /*useStateいらないのでは？と思ったけどエラーが出た。理由は不明。
+    いろいろ直したつもりなのに「Uncaught ReferenceError: posts is not defined」ってエラーが出た。
+  */
+  const [posts, setPosts] = useState([]);
+
   axios
     .get("https://pokeapi.co/api/v2/pokemon/?limit=1302")
+    //(results)はAPIのレスポンス全体
+    //(results.date)はレスポンスのデータ部分
+    //(results.data.results)はさらにその中のresultsデータ部分
     .then((results) => {
-      console.log(results.data);
+      //取得したデータを「items」変数へ
+      const items = results.data.results;
+      console.log(items);
+      //set関数内で関数？変数？を指定？（p.119）
+      setPosts(items);
     })
     .catch((error) => {
       console.log(error);
     });
 
-  const array = [];
-
+  //以下、元々なんでか「return」で書いてたけど、なんで「return」？なんで画面に表示されずに済んでるの？
   return (
-    <div>
-      <p>テスト</p>
-      {array.map((results) => (
-        <div key={results.name}>
-          <p>{results.url}</p>
-        </div>
+    //map内の第2引数には0から順に「何番目か(index)」という情報が格納される（p.60）
+    <>
+      {posts.map((post, index) => (
+        <List key={index} name={post.name} url={post.url} />
       ))}
-    </div>
+    </>
   );
 }
+
+//以下、どんな形で表示させたいか。
+const List = ({ name, url }) => {
+  return (
+    <p>
+      {name}:{url}
+    </p>
+  );
+};
