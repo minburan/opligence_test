@@ -1,47 +1,67 @@
 import "./styles.css";
 import axios from "axios";
-import { useState } from "react";
-
-//useEffectはあったほうがいいのか？？
+import { useState, useEffect } from "react";
 
 export default function App() {
-  /*useStateいらないのでは？と思ったけどエラーが出た。理由は不明。
+  /*☆useStateいらないのでは？と思ったけどエラーが出た。理由は不明。
     いろいろ直したつもりなのに「Uncaught ReferenceError: posts is not defined」ってエラーが出た。
   */
   const [posts, setPosts] = useState([]);
+  const [nexts, setNexts] = useState([]);
 
-  axios
-    .get("https://pokeapi.co/api/v2/pokemon/?limit=1302")
-    //(results)はAPIのレスポンス全体
-    //(results.date)はレスポンスのデータ部分
-    //(results.data.results)はさらにその中のresultsデータ部分
-    .then((results) => {
-      //取得したデータを「items」変数へ
-      const items = results.data.results;
-      console.log(items);
-      //set関数内で関数？変数？を指定？（p.119）
-      setPosts(items);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  useEffect(() => {
+    axios
+      .get("https://pokeapi.co/api/v2/pokemon/?limit=89")
+      //(results)はAPIのレスポンス全体
+      //(results.date)はレスポンスのデータ部分
+      //(results.data.results)はさらにその中のresultsデータ部分
+      .then((res) => {
+        //取得したデータを「items」変数へ
+        const items = res.data.results;
+        //console.log(items);
+        //set関数内で関数？変数？を指定？（p.119）
+        //console.log("item", items);
+        setPosts(items);
+        axios
+          .get("https://pokeapi.co/api/v2/pokemon/?limit=89/")
+          .then((res) => {
+            //const item = res;
+            console.log(res.data.forms);
 
-  //以下、元々なんでか「return」で書いてたけど、なんで「return」？なんで画面に表示されずに済んでるの？
+            axios
+              .get("https://pokeapi.co/api/v2/pokemon-form/89/")
+              .then((last) => {
+                console.log(last.data.sprites.front_default);
+                const picture = last.data.sprites.front_default;
+                setNexts(picture);
+              });
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
   return (
     //map内の第2引数には0から順に「何番目か(index)」という情報が格納される（p.60）
+    //☆再度mapで配列を展開するのかと思ったけどちがうっぽい。
     <>
       {posts.map((post, index) => (
-        <List key={index} name={post.name} url={post.url} />
+        <List key={index} name={post.name} url={post.url} picture={nexts} />
       ))}
     </>
   );
 }
 
 //以下、どんな形で表示させたいか。
-const List = ({ name, url }) => {
+//☆{url}の中のformsの中のurlのさらに中身を表示させたい…。
+const List = ({ name, url, picture }) => {
   return (
-    <p>
-      {name}:{url}
-    </p>
+    <>
+      <p>
+        {name}:{url}
+      </p>
+      <img src={picture} />
+    </>
   );
 };
