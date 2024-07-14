@@ -12,9 +12,9 @@ export default function App() {
   useEffect(() => {
     axios
       .get("https://pokeapi.co/api/v2/pokemon/?limit=89")
-      //(results)はAPIのレスポンス全体
-      //(results.date)はレスポンスのデータ部分
-      //(results.data.results)はさらにその中のresultsデータ部分
+      //(res)はAPIのレスポンス全体
+      //(res.date)はレスポンスのデータ部分
+      //(res.data.results)はさらにその中のresultsデータ部分
       .then((res) => {
         //取得したデータを「items」変数へ
         const items = res.data.results;
